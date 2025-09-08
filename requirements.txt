@@ -8,3 +8,5 @@ langchain-huggingface
 langchain-community
 typing-extensions
 duckduckgo-search
+langgraph-checkpoint
+langgraph-checkpoint-sqlite

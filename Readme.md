@@ -121,8 +121,3 @@ streamlit run frontend.py
 
 ---
 
----
-
-## License
-
-MIT License © 2025

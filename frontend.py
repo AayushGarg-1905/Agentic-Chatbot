@@ -1,6 +1,6 @@
 import streamlit as st
 from langgraph_backend import Chatbot, retrieve_all_threads
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 import uuid
 import time
 from streamlit_local_storage import LocalStorage
@@ -16,7 +16,10 @@ def generate_thread_id():
 
 def show_message(message, role):
     with st.chat_message(role):
-        st.text(message)
+        if role=='tool':
+            st.markdown(f"**Tool Call:** `{message}`")
+        else:
+            st.text(message)
 
 def new_chat_window():
     thread_id = generate_thread_id()
@@ -80,6 +83,8 @@ else:
             for msg in messages:
                 if isinstance(msg, HumanMessage):
                     role = 'user'
+                elif isinstance(msg,ToolMessage):
+                    role = 'tool'
                 else:
                     role = 'assistant'
                 temp_messages.append({'role': role, 'content': msg.content})
@@ -106,7 +111,8 @@ else:
 
 
     for message in st.session_state['message_history']:
-        show_message(message['content'], message['role'])
+        if len(message['content']) > 0:
+            show_message(message['content'], message['role'])
 
     CONFIG = {
         "configurable": {
@@ -149,3 +155,5 @@ else:
             ai_message = st.write_stream(get_full_response())   
 
         st.session_state['message_history'].append({'role': 'assistant', 'content': ai_message})
+
+

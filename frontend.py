@@ -92,11 +92,11 @@ else:
             st.session_state['message_history'] = temp_messages
 
     st.sidebar.header("API Key Settings")
-    DEFAULT_API_KEY = os.getenv("OPENAI_API_KEY")
+    DEFAULT_API_KEY = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
     use_custom_key = st.sidebar.checkbox("Use my own API key")
     if use_custom_key:
-        user_api_key = st.sidebar.text_input("Enter OpenAI API key", type="password")
+        user_api_key = st.sidebar.text_input("Enter Hugging face API key", type="password")
         if user_api_key:
             st.session_state["api_key"] = user_api_key
             st.sidebar.success("Using your custom API key ")

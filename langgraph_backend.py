@@ -14,7 +14,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from typing_extensions import Annotated
 from langgraph.graph import StateGraph, START, END
 from dotenv import load_dotenv
-from langchain_core.messages import BaseMessage, SystemMessage
+from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph.message import add_messages
 from langchain_huggingface import (
@@ -30,16 +30,14 @@ import asyncio
 import os
 import tempfile
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_core.tools import tool
-
 load_dotenv()
 
 
-
 llm = HuggingFaceEndpoint(
-    repo_id="Qwen/Qwen3-Coder-480B-A35B-Instruct",
+    repo_id="MiniMaxAI/MiniMax-M2.5",  # supports tool calling
     task="text-generation",
 )
 model = ChatHuggingFace(llm=llm)
@@ -186,6 +184,37 @@ class ChatState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
 
 
+def _sanitize_messages(messages):
+    """
+    Flatten any list-style content in ToolMessages to plain strings,
+    which HuggingFace's API requires.
+    """
+    sanitized = []
+    for msg in messages:
+        if isinstance(msg, ToolMessage):
+            content = msg.content
+            # If content is a list of blocks, extract text from them
+            if isinstance(content, list):
+                content = "\n".join(
+                    (
+                        block.get("text", str(block))
+                        if isinstance(block, dict)
+                        else str(block)
+                    )
+                    for block in content
+                )
+            # Reconstruct a clean ToolMessage without extra fields
+            sanitized.append(
+                ToolMessage(
+                    content=str(content),
+                    tool_call_id=msg.tool_call_id,
+                )
+            )
+        else:
+            sanitized.append(msg)
+    return sanitized
+
+
 def chat_node(state: ChatState, config=None):
 
     thread_id = None
@@ -202,7 +231,7 @@ def chat_node(state: ChatState, config=None):
         )
     )
 
-    messages = [system_message, *state["messages"]]
+    messages = _sanitize_messages([system_message, *state["messages"]])
 
     response = llm_with_tools.invoke(messages, config=config)
 

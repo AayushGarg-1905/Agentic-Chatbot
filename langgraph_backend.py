@@ -36,9 +36,7 @@ from langchain_core.tools import tool
 
 load_dotenv()
 
-# ============================================================================
-# LLM Setup
-# ============================================================================
+
 
 llm = HuggingFaceEndpoint(
     repo_id="Qwen/Qwen3-Coder-480B-A35B-Instruct",
@@ -46,8 +44,8 @@ llm = HuggingFaceEndpoint(
 )
 model = ChatHuggingFace(llm=llm)
 embedding_model = HuggingFaceEndpointEmbeddings(
-    model="sentence-transformers/all-MiniLM-L6-v2",  # Available embedding model on HF Inference API
-    provider="hf-inference",  # Specify the inference provider
+    model="sentence-transformers/all-MiniLM-L6-v2",  
+    provider="hf-inference", 
 )
 
 THREAD_RETRIEVERS: Dict[str, any] = {}
@@ -108,16 +106,8 @@ def ingest_pdf(
         except OSError:
             pass
 
-
-# ============================================================================
-# MCP Client - Load tools from MCP Server
-# ============================================================================
-
-# Path to the MCP server script (same directory as this file)
 MCP_SERVER_PATH = str(Path(__file__).parent / "mcp_server.py")
 
-# Create the MultiServerMCPClient with stdio transport
-# The MCP server will be started automatically as a subprocess
 mcp_client = MultiServerMCPClient(
     {
         "tools-server": {

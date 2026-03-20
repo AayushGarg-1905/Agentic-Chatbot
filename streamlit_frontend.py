@@ -5,9 +5,6 @@ import uuid
 import time
 import json
 
-# ============================================================================
-# Helper Functions
-# ============================================================================
 
 def generate_thread_id():
     return str(uuid.uuid4())
@@ -83,7 +80,7 @@ def load_conversation(thread_id):
 
 def get_thread_name(thread_id):
     """Get a display name for a thread. Uses the first user message, or falls back to truncated ID."""
-    # Check if we already have a cached name
+
     if thread_id in st.session_state.get('thread_names', {}):
         return st.session_state['thread_names'][thread_id]
 

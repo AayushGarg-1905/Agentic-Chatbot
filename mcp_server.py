@@ -13,6 +13,9 @@ Tools:
 from mcp.server.fastmcp import FastMCP
 from langchain_community.tools import DuckDuckGoSearchRun
 import requests
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 mcp = FastMCP("tools-server")
 
@@ -57,7 +60,7 @@ def get_stock_price(symbol: str) -> dict:
         url = (
             f"https://www.alphavantage.co/query"
             f"?function=GLOBAL_QUOTE&symbol={symbol}"
-            f"&apikey=O0D68F5T2H0RWUIV"
+            f"&apikey={os.getenv('STOCK_API')}"
         )
         r = requests.get(url, timeout=10)
         return r.json()

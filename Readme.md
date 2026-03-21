@@ -3,7 +3,7 @@
 # 🤖 MCP Agent Chatbot (LangGraph + RAG + Tool Calling)
 
 An advanced **Agentic Chatbot** built using **LangGraph, MCP (Model Context Protocol), and HuggingFace LLMs**.  
-This system supports **tool calling, RAG-based document understanding, multi-threaded conversations, and real-time streaming responses**.
+This system supports **tool calling, RAG-based document understanding, multi-threaded conversations, and real-time streaming responses along with observability via Langsmith**.
 
 ---
 
